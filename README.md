@@ -13,9 +13,6 @@ Here we present viSRA, a tool for visualizing RNA-seq data from SRA datasets on 
 
 ![alt text](https://user-images.githubusercontent.com/12971527/32574712-ff0dbfb8-c49f-11e7-8404-1e209a51c5c0.png "Overview Diagram")
 
-## Introduction
-The differential expression of genes in response to an experimental condition can give valuable information on the pathways involved in the reaction. Unfortunately, it currently takes many steps to compare gene expression levels between Next Generation Sequencing (NGS) data sets. This repository presents code for a simple tool to compare the expression of selected genes between sets of NGS runs, as well as a link to a user friendly web interface.
-
 ## What's the problem?
 The NCBI Sequence Read Archive (SRA) provides NGS data along with sample and project metadata (NCBI Resource Coordinators 2017). As part of the International Nucleotide Sequence Database Collaboration, the SRA supports access to data from a wide variety of experimental types and sequencing instruments. Unfortunaltely, it can be time-consuming and difficult to access and analyze the data, especially if you want to quickly develop meaningful hypotheses. viSRA bridges this gap between advanced bioinformatic data and users.
 
@@ -26,6 +23,8 @@ The amount of NGS data stored in the Sequence Read Archive (SRA) data-base is gr
 viSRA is a tool to compare two sets of NGS data for differences in gene expression. For example, if the user is interested in how gene expression varies in the liver after treatment for HCV, they may be interested in looking at a BioProject record that links the runs for a relevant experiment, such as https://www.ncbi.nlm.nih.gov/bioproject/328986. From that page, you can select the link for SRA experiments, then view the results in SRA Run Selector, which displays a table including the SRA run accessions and treatment conditions,  https://www.ncbi.nlm.nih.gov/sra?linkname=bioproject_sra_all&from_uid=328986. You will also need at least one Entrez Gene name to search against the SRA datsets.
 
 # Workflow
+
+## Software workflow diagram
 
 ## Build BLAST database  
 The first step to running the tool is to build BLAST databases for each of the input genes. Building the databases this way allows for rapid querying of only those databases that are relevent to your query, and allows for parallelization, thus increasing the programs speed. The accession, start & stop positions, and gene ID are pulled from ref_GRCh38.p7_top_level.gff3. Based on those positions, a bash script retrieves the sequences in FASTA format and saves each as an individual BLAST database in the active Docker server.
@@ -48,12 +47,12 @@ MagicBLAST produces a SAM file, which is processed by separate scripts in Docker
 
 ## Preparing the database
 Creates a working directory `data`
-
+Creates a BLAST DB for each human gene
 ```
 docker run -it -v `pwd`/data:/data biocontainers/desra desra_pre-process.sh -d /data/blastdb
 ```
 
-### Creating database for a selected number of genes
+## Creating database for a selected number of genes
 
 Create a file into the `data` directory with the list of genes to process (Gene name per line). Let's name the file `gene_name.txt`
 
@@ -79,20 +78,6 @@ A1CF_29974_50799409_50885681.nsi
 A1CF_29974_50799409_50885681.nsq
 ```
 
-## Processing data with the command line options
-To align a single gene with a number of SRA accessions. The gene blastdb should be create with the previous step.
-
-```
-docker run -it -v `pwd`/data:/data biocontainers/desra desra_go_mb.sh -d /data/blastdb/ref_GRCh38.p7_top_level -s comma_separated_sra_list -g A1CF -t number_of_threads
-```  
-
-This command will create two files:
-
-```
-A1CF_29974_50799409_50885681.bam
-A1CF_29974_50799409_50885681.bam.bai
-```
-
 ## Processing a list of gene vs two lists of SRA accessions
 
 We've developed a main script `desra_main.sh` to process a list of genes vs two lists of SRA accessions (condition 1 and condition 2). This script is also designed to process the jobs submitted by the website. Therefore, it required special working folder.
@@ -109,6 +94,13 @@ docker run -it -v `pwd`/data:/data biocontainers/desra desra_main.sh -d /data/bl
 
 Please, note that `-t 4` will run magicblast with 4 threads. Adapt this command to your host resources.
 
+This command will create two files for each gene-srr combination:
+
+```
+A1CF_29974_50799409_50885681.bam
+A1CF_29974_50799409_50885681.bam.bai
+```
+
 ## Running the docker image for the website
 Execute this command for the website app. It will be available in the host port 8000
 
@@ -116,9 +108,7 @@ Execute this command for the website app. It will be available in the host port 
 docker run -d -p 8000:8000 -v `pwd`/data:/data biocontainers/desra /home/biodocker/bin/docker_entry.sh
 ```
 
-
 # Future Development Plans
-
 
 # Project team  
 
@@ -138,5 +128,3 @@ Kristin Valdez
 Robert Guthridge  
 Ryan Connor  
 Luli Zou
-
-# Software workflow diagram
