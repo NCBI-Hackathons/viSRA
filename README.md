@@ -25,7 +25,7 @@ viSRA is a tool to compare two sets of NGS data for differences in gene expressi
 # Workflow
 
 ## Software workflow diagram
-![alt text]( "Overview Diagram")
+![alt text](viSRA/workFlow_viSRA.jpg "Overview Diagram")
 
 ## Build BLAST database  
 The first step to running the tool is to build BLAST databases for each of the input genes. Building the databases this way allows for rapid querying of only those databases that are relevent to your query, and allows for parallelization, thus increasing the programs speed. The accession, start & stop positions, and gene ID are pulled from ref_GRCh38.p7_top_level.gff3. Based on those positions, a bash script retrieves the sequences in FASTA format and saves each as an individual BLAST database in the active Docker server.
