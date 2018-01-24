@@ -17,28 +17,32 @@ Here we present viSRA, a tool for visualizing RNA-seq data from SRA datasets on 
 The differential expression of genes in response to an experimental condition can give valuable information on the pathways involved in the reaction. Unfortunately, it currently takes many steps to compare gene expression levels between Next Generation Sequencing (NGS) data sets. This repository presents code for a simple tool to compare the expression of selected genes between sets of NGS runs, as well as a link to a user friendly web interface.
 
 ## What's the problem?
-The NCBI Sequence Read Archive (SRA) provides NGS data along with sample and project metadata (NCBI Resource Coordinators 2017). As part of the International Nucleotide Sequence Database Collaboration, the SRA supports access to data from a wide variety of experimental types and sequencing instruments. Unfortunaltely, it can be time-consuming and difficult to access and analyze the data, especially if you want to quickly develop meaningful hypotheses. deSRA bridges this gap between advanced bioinformatic data and users.
+The NCBI Sequence Read Archive (SRA) provides NGS data along with sample and project metadata (NCBI Resource Coordinators 2017). As part of the International Nucleotide Sequence Database Collaboration, the SRA supports access to data from a wide variety of experimental types and sequencing instruments. Unfortunaltely, it can be time-consuming and difficult to access and analyze the data, especially if you want to quickly develop meaningful hypotheses. viSRA bridges this gap between advanced bioinformatic data and users.
 
 ## Why should we solve it?
-The amount of NGS data stored in the Sequence Read Archive (SRA) data-base is growing rapidly. However, many researchers who are interested in this data do not have experience with the tools necessary to analyze it effectively. deSRA increases the utility and return on investment of NGS projects by making the data more accessible to a wider range of individuals.
+The amount of NGS data stored in the Sequence Read Archive (SRA) data-base is growing rapidly. However, many researchers who are interested in this data do not have experience with the tools necessary to analyze it effectively. viSRA increases the utility and return on investment of NGS projects by making the data more accessible to a wider range of individuals.
 
-# What is deSRA?
-deSRA is a tool to compare two sets of NGS data for differences in gene expression. For example, if the user is interested in how gene expression varies in the liver after treatment for HCV, they may be interested in looking at a BioProject record that links the runs for a relevant experiment, such as https://www.ncbi.nlm.nih.gov/bioproject/328986. From that page, you can select the link for SRA experiments, then view the results in SRA Run Selector, which displays a table including the SRA run accessions and treatment conditions,  https://www.ncbi.nlm.nih.gov/sra?linkname=bioproject_sra_all&from_uid=328986. You will also need at least one Entrez Gene name to search against the SRA datsets.
+# What is viSRA?
+viSRA is a tool to compare two sets of NGS data for differences in gene expression. For example, if the user is interested in how gene expression varies in the liver after treatment for HCV, they may be interested in looking at a BioProject record that links the runs for a relevant experiment, such as https://www.ncbi.nlm.nih.gov/bioproject/328986. From that page, you can select the link for SRA experiments, then view the results in SRA Run Selector, which displays a table including the SRA run accessions and treatment conditions,  https://www.ncbi.nlm.nih.gov/sra?linkname=bioproject_sra_all&from_uid=328986. You will also need at least one Entrez Gene name to search against the SRA datsets.
 
-Build BLAST database  
+# Workflow
+
+## Build BLAST database  
 The first step to running the tool is to build BLAST databases for each of the input genes. Building the databases this way allows for rapid querying of only those databases that are relevent to your query, and allows for parallelization, thus increasing the programs speed. The accession, start & stop positions, and gene ID are pulled from ref_GRCh38.p7_top_level.gff3. Based on those positions, a bash script retrieves the sequences in FASTA format and saves each as an individual BLAST database in the active Docker server.
 
-Magic BLAST  
+## Magic BLAST  
 MagicBLAST is run iteratively for each gene, once for the treatment runs and once for the experiment runs.
 The general format for running the magicBLAST command is:  
 `magicblast -sra <accession> -db <database_name>`
 See more at https://ncbi.github.io/magicblast/
 
-Comparison of gene expression  
+## Comparison of gene expression  
 MagicBLAST produces a SAM file, which is processed by separate scripts in Docker encoding samtools commands. The SAM file is converted to a BAM file, which is sorted and indexed, and used to generate a pileup. TPM is calculated for the pileups generated from the experimental runs and the control runs, and a volcano plot is used to display the log2 of the TPM ratios.
 
-## Installing deSRA from Github
-`git clone https://github.com/NCBI-Hackathons/deSRA`
+# Installation and Setup
+
+## Installing viSRA from Github
+`git clone https://github.com/NCBI-Hackathons/viSRA`
 
 `docker build -t biocontainers/desra deSRA/`
 
