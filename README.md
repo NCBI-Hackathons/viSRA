@@ -1,5 +1,5 @@
 # viSRA
-**v**isualization of **SRA**: This tool takes SRR-Gene alignments from deSRA (https://github.com/NCBI-Hackathons/deSRA) and uses them as input to the AicroArrayPipeline's (https://github.com/CCBR/MicroArrayPipeline) analysis and visualization modules.
+**v**isualization of **SRA**: This tool takes SRR-Gene alignments from deSRA (https://github.com/NCBI-Hackathons/deSRA) and uses them as input to the MicroArrayPipeline's analysis and visualization modules.
 
 ## Introduction
 The future of biomedical research depends on the ability to rapidly access and analyze Next-Generation Sequencing (NGS) data stored at the NCBI’s Sequence Read Archive (SRA). NGS provides an unprecedented level of resolution, allowing researchers to ask previously unanswerable questions such as how cancer pathogenesis might be mediated by very small changes in gene expression.
